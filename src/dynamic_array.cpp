@@ -4,105 +4,67 @@
 #include <stdexcept>  // invalid_argument (НЕЛЬЗЯ ИСПОЛЬЗОВАТЬ)
 
 namespace assignment {
+
   DynamicArray::DynamicArray(int capacity) {
+
+    // выбрасываем ошибку, если указана неположительная емкость массива
     if (capacity <= 0) {
       throw std::invalid_argument("capacity is not positive");
     }
-    size_ = 0;
-    capacity_ = capacity;
-    data_ = new int[capacity_];
-    std::fill(data_,data_+capacity_,0);
 
+    capacity_ = capacity;
+    data_ = new int[capacity]{};
   }
 
   DynamicArray::~DynamicArray() {
     size_ = 0;
     capacity_ = 0;
-
-    delete[] data_;
+    delete data_;
     data_ = nullptr;
   }
 
   void DynamicArray::Add(int value) {
-    if (size_ == capacity_) {
-      int* new_data = new int[capacity_ + kCapacityGrowthCoefficient];
-      for (int i = 0; i < size_; i++) {
-        new_data[i] = data_[i];
-      }
-      new_data[size_] = value;
-      delete[] data_;
-      data_ = new_data;
-      size_++;
-      capacity_ = capacity_ + kCapacityGrowthCoefficient;
-    } else {
-      data_[size_] = value;
-      size_++;
+    if (size_ >= capacity_) {
+      Resize(capacity_ + kCapacityGrowthCoefficient);
     }
+
+    data_[size_] = value;
+    size_ += 1;
   }
 
   bool DynamicArray::Insert(int index, int value) {
-    if ((index < 0)||(index > size_)) {
+    if (index < 0 || index > size_) {
       return false;
     }
-    if ((size_ == 0)||(index == size_)||((size_ == 1)&&(index == 1))) {
-      Add(value);
-      return true;
+
+    if (size_ >= capacity_) {
+      Resize(capacity_ + kCapacityGrowthCoefficient);
     }
-    if ((size_ == 1)&&(index == 0)) {
-      Add(data_[0]);
-      data_[0] = value;
-      return true;
-    }
-    if (size_ == capacity_) {
-      int* new_array = new int[capacity_+kCapacityGrowthCoefficient];
-      for (int i = 0; i <= size_; i++) {
-        if (i < index) {
-          new_array[i] = data_[i];
-        }
-        if (i == index) {
-          new_array[i] = value;
-        }
-        if (i > index) {
-          new_array[i] = data_[i-1];
-        }
-      }
-      size_++;
-      capacity_ = capacity_+kCapacityGrowthCoefficient;
-      data_ = new_array;
-      return true;
-    }
-    for (int i = size_; i > index; i--) {
-      data_[i] = data_[i-1];
-    }
+
+    std::copy(data_ + index, data_ + size_, data_ + index + 1);
+    size_ += 1;
     data_[index] = value;
-    size_++;
     return true;
   }
 
   bool DynamicArray::Set(int index, int new_value) {
-    if ((size_ == 0)||(index >= size_)||(index < 0)) {
+    if (index < 0 || index >= size_) {
       return false;
     }
+
     data_[index] = new_value;
     return true;
-
   }
 
   std::optional<int> DynamicArray::Remove(int index) {
-    if (IsEmpty()||(index < 0)||(index >= size_)) {
+    if (index < 0 || index >= size_) {
       return std::nullopt;
     }
-    int deleted_element = data_[index];
-    if ((size_ == 1)||(index == size_-1)) {
-      data_[index] = 0;
-      size_--;
-      return deleted_element;
-    }
-    for (int i = index; i < size_-1; i++) {
-      data_[i] = data_[i+1];
-    }
-    size_--;
-    return deleted_element;
+
+    int value = data_[index];
+    std::copy(data_ + index + 1, data_ + size_, data_ + index);
+    size_ -= 1;
+    return value;
   }
 
   void DynamicArray::Clear() {
@@ -110,13 +72,11 @@ namespace assignment {
   }
 
   std::optional<int> DynamicArray::Get(int index) const {
-    if (size_ == 0) {
-      return std::nullopt;
-    } else if ((index < size_)&&(index >= 0)) {
-      return data_[index];
-    } else {
+    if (index < 0 || index >= size_) {
       return std::nullopt;
     }
+
+    return data_[index];
   }
 
   std::optional<int> DynamicArray::IndexOf(int value) const {
@@ -138,7 +98,7 @@ namespace assignment {
   }
 
   bool DynamicArray::IsEmpty() const {
-    return size_ == 0;
+    return size_ <= 0;
   }
 
   int DynamicArray::size() const {
@@ -153,10 +113,11 @@ namespace assignment {
     if (new_capacity <= capacity_) {
       return false;
     }
-    int* new_arr = new int[new_capacity];
-    std::copy(data_,data_+size_,new_arr);
-    delete[] data_;
-    data_ = new_arr;
+
+    int* new_data = new int[new_capacity]{};
+    std::copy(data_, data_+size_, new_data);
+    delete data_;
+    data_ = new_data;
     capacity_ = new_capacity;
     return true;
   }
