@@ -7,75 +7,54 @@ namespace assignment {
 
   ArrayStack::ArrayStack(int capacity) {
 
-    // выбрасываем ошибку, если указана неположительная емкость массива
+    // выбрасываем ошибку, если указана неположительная емкость стека
     if (capacity <= 0) {
       throw std::invalid_argument("capacity is not positive");
     }
 
-    capacity_ = capacity;
-    data_ = new int[capacity]{};
+    // Write your code here ...
   }
 
   ArrayStack::~ArrayStack() {
-    size_ = 0;
-    capacity_ = 0;
-    delete data_;
-    data_ = nullptr;
+    // Write your code here ...
   }
 
   void ArrayStack::Push(int value) {
-    if (size_ >= capacity_) {
-      Resize(capacity_ + kCapacityGrowthCoefficient);
-    }
-
-    data_[size_] = value;
-    size_ += 1;
+    // Write your code here ...
   }
 
   bool ArrayStack::Pop() {
-    if (size_ <= 0) {
-      return false;
-    }
-
-    size_ -= 1;
-    return true;
+    // Write your code here ...
+    return false;
   }
 
   void ArrayStack::Clear() {
-    size_ = 0;
+    // Write your code here ...
   }
 
   std::optional<int> ArrayStack::Peek() const {
-    if (size_ <= 0) {
-      return std::nullopt;
-    }
-
-    return data_[size_-1];
+    // Write your code here ...
+    return std::nullopt;
   }
 
   bool ArrayStack::IsEmpty() const {
-    return size_ == 0;
+    // Write your code here ...
+    return false;
   }
 
   int ArrayStack::size() const {
-    return size_;
+    // Write your code here ...
+    return 0;
   }
 
   int ArrayStack::capacity() const {
-    return capacity_;
+    // Write your code here ...
+    return 0;
   }
 
   bool ArrayStack::Resize(int new_capacity) {
-    if (new_capacity <= capacity_) {
-      return false;
-    }
-
-    int* new_data = new int[new_capacity]{};
-    std::copy(data_, data_+size_, new_data);
-    delete data_;
-    data_ = new_data;
-    capacity_ = new_capacity;
-    return true;
+    // Write your code here ...
+    return false;
   }
 
   // ДЛЯ ТЕСТИРОВАНИЯ
